@@ -133,7 +133,7 @@ Calculator Calculator :: operator-(const Calculator& other)
     int subtractLasts;
     Node* current1;
     Node* current2;
-    if ((*this) > other)
+    if ((*this) >= other)
     {
         subtractLasts = this->last->data - other.getLastNode()->data;
         current1 = this->last->prev;
@@ -170,6 +170,7 @@ Calculator Calculator :: operator-(const Calculator& other)
         if (subtractLasts < 0)
         {
             minus1 = true;
+            resultLast->data += 10;
         }
         if (current1 != nullptr)
         {
@@ -224,6 +225,46 @@ bool Calculator :: operator>(const Calculator& other)
     }
 }
 
+bool Calculator :: operator>=(const Calculator& other)
+{
+    Node* crr1 = this->first;
+    Node* crr2 = other.getFirstNode();
+    int biggerNum = 0;
+    while (crr1 != nullptr && crr2 != nullptr)
+    {  
+        if (biggerNum == 0)
+        {
+            if (crr1->data > crr2->data)
+            {
+                biggerNum = 1;
+            }
+            if (crr1->data < crr2->data)
+            {
+                biggerNum = 2;
+            }
+        }
+        crr1 = crr1->next;
+        crr2 = crr2->next;
+    }
+
+    if (crr1 == nullptr && crr2 != nullptr)
+    {
+        return false;
+    }
+    else if (crr2 == nullptr && crr1 != nullptr)
+    {
+        return true;
+    }
+    else      // размера е равен
+    {
+        if (biggerNum == 1 || biggerNum == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+}
+
 Calculator Calculator :: operator*(const Calculator& other)
 {
     Node* nullNode = new Node{0, nullptr, nullptr};
@@ -271,9 +312,9 @@ Calculator Calculator :: operator*(const Calculator& other)
 
         for (int i = 0; i < moveLeft; i++)
         {
-            Node* moveL = new Node {0, nullptr, midResult.getLastNode()};
-            midResult.getLastNode()->next = moveL;
-            midResult.setLast(moveL);
+            Node* move = new Node {0, nullptr, midResult.getLastNode()};
+            midResult.getLastNode()->next = move;
+            midResult.setLast(move);
         }
 
         result = result + midResult; 

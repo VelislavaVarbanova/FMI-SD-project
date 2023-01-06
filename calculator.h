@@ -28,5 +28,6 @@ public:
     Calculator operator+(const Calculator&);
     Calculator operator-(const Calculator&);
     bool operator>(const Calculator&);
+    bool operator>=(const Calculator&);
     Calculator operator*(const Calculator&);
 };
