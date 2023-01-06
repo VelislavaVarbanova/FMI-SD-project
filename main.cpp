@@ -3,13 +3,13 @@
 
 int main()
 {
-    std::string string1 = "12456789031415";
-    std::string string2 = "98765432123456789";
+    std::string string1 = "1234";
+    std::string string2 = "4321";
     std :: string string3 = "0";
     Calculator a (string1);
     Calculator b (string2);
     Calculator c (string3);
-    Calculator d = a+b;
+    Calculator d = a*b;
     Node* current = d.getFirstNode();
         // Node* node = new Node (0);
         // Calculator d (node);

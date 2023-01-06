@@ -23,11 +23,13 @@ public:
     void setLast(Node*);
 
     std::string convert10to16();
-    std::string convert16to10(const std::string&);
+    Calculator convert16to10(const std::string&);
 
     Calculator operator+(const Calculator&);
     Calculator operator-(const Calculator&);
     bool operator>(const Calculator&);
     bool operator>=(const Calculator&);
     Calculator operator*(const Calculator&);
+    Calculator operator/(const Calculator&);
+    Calculator operator%(const Calculator&);
 };

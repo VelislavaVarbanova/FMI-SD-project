@@ -62,14 +62,14 @@ Calculator :: ~Calculator()
     clear();
 }
 
-// std::string Calculator :: convert16to10(const std::string& string)
-// {
-
-// }
-
 // std::string Calculator :: convert10to16()
 // {
     
+// }
+
+// Calculator Calculator :: convert16to10(const std::string& string)
+// {
+
 // }
 
 Calculator Calculator :: operator+(const Calculator& other)
@@ -318,6 +318,13 @@ Calculator Calculator :: operator*(const Calculator& other)
         }
 
         result = result + midResult; 
+
+        for (int i = 0; i < moveLeft; i++)
+        {
+            Node* moveL = new Node {0, nullptr, midResult.getLastNode()};
+            midResult.getLastNode()->next = moveL;
+            midResult.setLast(moveL);
+        }
 
         moveLeft++;
         carryCurrent = 0;
