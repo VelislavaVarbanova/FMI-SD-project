@@ -3,12 +3,13 @@
 
 int main()
 {
-    std::string string1 = "1234";
-    std::string string2 = "4321";
+    std::string string1 = "2";
+    std::string string2 = "4";
     std :: string string3 = "0";
     Calculator a (string1);
     Calculator b (string2);
     Calculator c (string3);
+    std::cout << " ";
     Calculator d = a*b;
     Node* current = d.getFirstNode();
         // Node* node = new Node (0);
@@ -32,7 +33,7 @@ int main()
     // {
     //     std:: cout << " 3 ";
     // }
-    // if (a > a)
+    // if (a < b)
     // {
     //     std:: cout << " 4 ";
     // }

@@ -8,13 +8,15 @@ private:
 
     Node* first;
     Node* last;
+
+    void clear();
+    size_t size () const;
     
 public:
     Calculator();
     Calculator(const std::string&);
     Calculator(Node*);
     ~Calculator();
-    void clear();
 
     Node* getFirstNode()const;
     Node* getLastNode()const;
@@ -29,6 +31,8 @@ public:
     Calculator operator-(const Calculator&);
     bool operator>(const Calculator&);
     bool operator>=(const Calculator&);
+    bool operator<(const Calculator&);
+
     Calculator operator*(const Calculator&);
     Calculator operator/(const Calculator&);
     Calculator operator%(const Calculator&);
