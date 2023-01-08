@@ -11,12 +11,13 @@ private:
 
     void clear();
     size_t size () const;
+    void copy(const Calculator& other);
     
 public:
     Calculator();
     Calculator(const std::string&);
     Calculator(Node*);
-    ~Calculator();
+    // ~Calculator();
 
     Node* getFirstNode()const;
     Node* getLastNode()const;
@@ -32,6 +33,7 @@ public:
     bool operator>(const Calculator&);
     bool operator>=(const Calculator&);
     bool operator<(const Calculator&);
+    Calculator& operator=(const Calculator& other);
 
     Calculator operator*(const Calculator&);
     Calculator operator/(const Calculator&);
