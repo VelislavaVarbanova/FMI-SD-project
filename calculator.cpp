@@ -57,10 +57,15 @@ Calculator& Calculator::operator=(const Calculator& other)
 }
 void Calculator::copy(const Calculator& other)
 {
-      //we assume the list is empty
+    if (other.getFirstNode() == nullptr)
+    {
+        first = nullptr;
+        last = nullptr;
+        return;
+    }
     Node* last_created = nullptr;
     Node* current = other.getFirstNode();
-    while(current->next != nullptr) //we can directly parse with other_first because its a copy of the pointer to the first elem 
+    while(current->next != nullptr) 
     {
         Node* new_node = new Node {current->data, nullptr, last_created};
         if (last_created != nullptr)
@@ -74,8 +79,14 @@ void Calculator::copy(const Calculator& other)
         last_created = new_node;
         current = current->next;
     }
-    last_created->next = new Node {current->data, nullptr, last_created};
-    last = last_created->next;
+    if (last_created != nullptr)
+    {
+        last_created->next = new Node {current->data, nullptr, last_created};
+        last = last_created->next;
+        return;
+    }
+    first = new Node{current->data, nullptr, nullptr};
+    last = first;
 }
 
 void Calculator :: clear()
@@ -181,9 +192,6 @@ Calculator Calculator :: operator-(const Calculator& other)
     }else
     {
         throw std::logic_error ("Big Numbers support only POSITIVE numbers!");
-        // subtractLasts = other.getLastNode()->data - this->last->data;
-        // current1 = other.getLastNode()->prev;
-        // current2 = this->last->prev;
     }
     Node* resultLast = new Node {subtractLasts, nullptr, nullptr};
     result.setLast(resultLast);
@@ -193,8 +201,16 @@ Calculator Calculator :: operator-(const Calculator& other)
        
         if (current2 == nullptr)
         {
-            subtractLasts = current1->data - minus;
-            minus = 0;
+            if (current1->data - minus < 0)
+            {
+                subtractLasts = current1->data + 10 - minus;
+                minus = 1;
+            }
+            else
+            {
+                subtractLasts = current1->data - minus;
+                minus = 0;
+            }
         }else 
         {
             if (current1->data - minus < current2->data )
@@ -220,18 +236,25 @@ Calculator Calculator :: operator-(const Calculator& other)
             current2 = current2->prev;
         }
     }
-    if (resultLast->data == 0)
+    if (resultLast->data == 0 && resultLast->next != nullptr)
     {
-        if (resultLast->next->data == 0)
+        if (resultLast->next != nullptr && resultLast->next->data == 0 )
         {
-
-            while (resultLast->next->data == 0 && resultLast->next->next != nullptr)
+            while (resultLast->next != nullptr && resultLast->next->data == 0 )
             {
                 Node* save = resultLast;
                 resultLast = resultLast->next;
                 resultLast->prev = nullptr;
                 delete save;
             }
+            if (resultLast->next != nullptr )
+            {
+                Node* save = resultLast;
+                resultLast = resultLast->next;
+                resultLast->prev = nullptr;
+                delete save;
+            }
+            
         }
         else
         {
@@ -240,13 +263,6 @@ Calculator Calculator :: operator-(const Calculator& other)
             resultLast->prev = nullptr;
             delete save;
         }
-    }
-    if (resultLast->data == 0)
-    {
-        Node* save = resultLast;
-        resultLast = resultLast->next;
-        resultLast->prev = nullptr;
-        delete save;
     }
     result.setFirst(resultLast);
     return result;
@@ -341,6 +357,10 @@ Calculator Calculator :: operator*(const Calculator& other)
 {
     Node* nullNode = new Node{0, nullptr, nullptr};
     Calculator result(nullNode);
+    if (this->first->data == 0 || other.getFirstNode()->data == 0) //taka opravqme problema s pechataneto na 0000
+    {
+        return result;
+    }
     Node* current1;
     Node* current2;
     if ((*this) > other)
@@ -419,31 +439,13 @@ size_t Calculator :: size() const
 }
 
 Calculator Calculator :: operator/(const Calculator& other)
-{
-    std::cout << "delitelq e ";
-    Node* prnt3 = this->first;
-    while (prnt3 != nullptr)
-    {
-        std:: cout << prnt3->data;
-        prnt3 = prnt3->next;
-    }
-    std:: cout << std:: endl;
-    std::cout << "delimoto e ";
-    Node* prnt4 = other.getFirstNode();
-    while (prnt4 != nullptr)
-    {
-        std:: cout << prnt4->data;
-        prnt4 = prnt4->next;
-    }
-    
-
+{   
     if ((*this) < other)
     {
         Node* nullNode = new Node{0, nullptr, nullptr};
         Calculator result(nullNode);
         return result;
     }
-    std::cout << " q ";
     Calculator result;
     Calculator midResult1;
     Node* current = this->first;
@@ -456,7 +458,6 @@ Calculator Calculator :: operator/(const Calculator& other)
     current = current->next;
     for (size_t i = 0; i < other.size() - 1; i++)
     {
-        std::cout << " w ";
         Node* currentNode = new Node {current->data, nullptr, resultNode};
         resultNode->next = currentNode;
         resultNode = currentNode;
@@ -465,108 +466,27 @@ Calculator Calculator :: operator/(const Calculator& other)
     midResult1.setLast(resultNode);
     while (current != nullptr)
     {
-        // std::cout << std:: endl << "mid result is ";
-        // Node* prnt2 = midResult1.getFirstNode();
-        // while (prnt2 != nullptr)
-        // {
-        //     std:: cout << prnt2->data;
-        //     prnt2 = prnt2->next;
-        // }
-
         if (nodeHelper != nullptr)
         {
-            std::cout << " p ";
-            //std :: cout << " crr " << current->data;
             Node* nextDigit = new Node {current->data, nullptr, midResult1.getLastNode()};
             midResult1.getLastNode()->next = nextDigit;
             midResult1.setLast(nextDigit);
-
-            std::cout << std:: endl << "mid result is ";
-            Node* prnt6 = midResult1.getFirstNode();
-            while (prnt6 != nullptr)
-            {
-                std:: cout << prnt6->data;
-                prnt6 = prnt6->next;
-            }
+            current = current->next;
         }
-        
-        std::cout << " Here ";
         if (midResult1 < multiplyDivisor)
         {
-            std::cout << " v ";
             Node* plusDigit = new Node {current->data, nullptr, resultNode};
             resultNode->next = plusDigit;
             resultNode = plusDigit;
             current = current->next;
             midResult1.setLast(resultNode);
         }
-        //std::cout << " here ";
         countSubtractions = 0;
-        
-
-        std::cout << std:: endl << "Mid result is ";
-        Node* prnt0 = midResult1.getFirstNode();
-        while (prnt0 != nullptr)
-        {
-            std:: cout << prnt0->data;
-            prnt0 = prnt0->next;
-        }
-        std:: cout << std:: endl;
-        std::cout << "Delimoto e ";
-        Node* prnt = multiplyDivisor.getFirstNode();
-        while (prnt != nullptr)
-        {
-            std:: cout << prnt->data;
-            prnt = prnt->next;
-        }
-        std:: cout << std:: endl;
-
-        Node* nullNode = new Node{0, nullptr, nullptr};
-        Calculator newResult (nullNode);
         while (midResult1 >= multiplyDivisor)
         {
-            // std :: cout <<std:: endl<< " m ";
-            
-            // std::cout <<  " new result is ";
-            // Node* prnt5 = newResult.getFirstNode();
-            // while (prnt5 != nullptr)
-            // {
-            //     std:: cout << prnt5->data;
-            //     prnt5 = prnt5->next;
-            // }
-            //  std::cout <<  " multy is ";
-            // Node* prnt77 = multiplyDivisor.getFirstNode();
-            // while (prnt77 != nullptr)
-            // {
-            //     std:: cout << prnt77->data;
-            //     prnt77 = prnt77->next;
-            // }
-            // std::cout <<  "  mid result is ";
-            // Node* prnt7 = midResult1.getFirstNode();
-            // while (prnt7 != nullptr)
-            // {
-            //     std:: cout << prnt7->data;
-            //     prnt7 = prnt7->next;
-            // }
-            // newResult = newResult + multiplyDivisor;
-            countSubtractions++;
             midResult1 = midResult1 - multiplyDivisor;
-            
-            // std::cout << " " << countSubtractions << " ";
-            
-            std::cout << std::endl << " " << countSubtractions << " ";
-            std::cout <<  " mid result is ";
-            Node* prnt2 = midResult1.getFirstNode();
-            while (prnt2 != nullptr)
-            {
-                std:: cout << prnt2->data;
-                prnt2 = prnt2->next;
-            }
-            // midResult1 = newResult;
+            countSubtractions++;
         }
-        // countSubtractions--;
-        // midResult1 = midResult1 + multiplyDivisor - newResult;
-        std :: cout << "probaA ";
         Node* setResult = new Node {countSubtractions, nullptr, nodeHelper};
         if (nodeHelper != nullptr)
         {
@@ -578,100 +498,16 @@ Calculator Calculator :: operator/(const Calculator& other)
         }
         nodeHelper = setResult;
         result.setLast(setResult);
-        Node* prntR = result.getFirstNode();
-
-        std::cout << std::endl << " result is ";
-        while (prntR != nullptr)
-        {
-            std::cout << prntR->data;
-            prntR=prntR->next;
-        }
     }
-    
-    
-    std::cout << " end ";
-    //Node* oneNode = new Node {1, nullptr,nullptr};
-    
+    return result;
+}
 
-    //*//----------------------------//
-
-    
-        // std::cout << std:: endl << "mid result is ";
-        // Node* prnt5 = midResult1.getFirstNode();
-        // while (prnt5 != nullptr)
-        // {
-        //     std:: cout << prnt5->data;
-        //     prnt5 = prnt5->next;
-        // }
-        // std :: cout << "  "<< std :: endl;
-        // std::cout << "delimoto e ";
-        // Node* prnt2 = multiplyDivisor.getFirstNode();
-        // while (prnt2 != nullptr)
-        // {
-        //     std:: cout << prnt2->data;
-        //     prnt2 = prnt2->next;
-        // }
-        // midResult1 = midResult2;
-        //std:: cout << " b ";
-    
-     
-    
-    std::cout << " t ";
-    // while (current != nullptr)
-    // {
-    //     countSubtractions = 0;
-    //     std::cout << " f ";
-    //     Node* nextDigit = new Node {current->data, nullptr, midResult1.getLastNode()};
-    //     midResult1.getLastNode()->next = nextDigit;
-    //     midResult1.setLast(nextDigit);
-
-    //     std::cout << current->data << " ";
-    //     std::cout << std:: endl << "Mid result is ";
-    //     Node* prnt4 = midResult1.getFirstNode();
-    //     while (prnt4 != nullptr)
-    //     {
-    //         std:: cout << prnt4->data;
-    //         prnt4 = prnt4->next;
-    //     }
-    //     std::cout << " delimoto e ";
-    //     Node* prnt8 = multiplyDivisor.getFirstNode();
-    //     while (prnt8 != nullptr)
-    //     {
-    //         std:: cout << prnt8->data;
-    //         prnt8 = prnt8->next;
-    //     }
-
-    //     if (midResult1 < other)
-    //     {
-    //         std::cout << " nn ";
-    //         Node* plusDigit = new Node {current->data, nullptr, resultNode};
-    //         resultNode->next = plusDigit;
-    //         resultNode = plusDigit;
-    //         current = current->next;
-    //         midResult1.setLast(resultNode);
-    //     }
-    //     while (midResult1 >= multiplyDivisor)
-    //     {
-    //         midResult1 = midResult1 - multiplyDivisor;
-    //         countSubtractions++;
-
-    //         std::cout <<  "   " <<  countSubtractions << " ";
-    //         // std::cout << " mid result is ";
-    //         // Node* middd = midResult1.getFirstNode();
-    //         // while (middd != nullptr)
-    //         // {
-    //         //     std:: cout << middd->data;
-    //         //     middd = middd->next;
-    //         // }
-    //         // std :: cout << "  "<< std :: endl;
-    //     }
-    //     std :: cout << " proba2 ";
-    //     Node* setResult = new Node {countSubtractions, nullptr, result.getLastNode()};
-    //     result.getLastNode()->next = setResult;
-    //     result.setLast(setResult); 
-
-    //     current = current->next;  
-    // }
-
+Calculator Calculator :: operator%(const Calculator& other)
+{
+    Calculator result;
+    Calculator otherCoppy(other.getFirstNode());
+    Calculator dividend = (*this) / otherCoppy;
+    Calculator toSubtract = dividend*otherCoppy;
+    result = (*this) - toSubtract;
     return result;
 }
