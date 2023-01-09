@@ -105,14 +105,138 @@ void Calculator :: clear()
 //     clear();
 // }
 
-// std::string Calculator :: convert10to16()
-// {
-    
-// }
+std::string Calculator :: convert10to16()
+{
+    Calculator N (this->first);
+    Node* nullNode = new Node{0, nullptr, nullptr};
+    Calculator zero(nullNode);
+    std::string result;
+    int b = 16;     //b is for base and it's 16 because we are cinverting to hex 
+    Node* bNode = new Node {1 , nullptr, nullptr}; 
+    Calculator B;
+    B.setFirst(bNode);
+    B.setLast(new Node {6, nullptr, bNode});
+    bNode->next = B.getLastNode();
+    while (!(N == zero))
+    {
+        Calculator D = N / B;
+        Calculator R = N % B;
+        char r;
+        if (R.getFirstNode()->data > 1 && R.getFirstNode()->data <= 9)
+        {
+            r = R.getFirstNode()->data;
+            r = r + '0';
+        }
+        else if (R.getFirstNode()->data == 1)
+        {
+            switch (R.getLastNode()->data)
+            {
+            case 0:
+                r = 'A';
+                break;
+            case 1:
+                r = 'B';
+                break;
+            case 2:
+                r = 'C';
+                break;
+            case 3:
+                r = 'D';
+                break;
+            case 4:
+                r = 'E';
+                break;
+            case 5:
+                r = 'F';
+                break;
+            default: throw std::logic_error ("wrong number!");
+                break;
+            }
+        }else
+        {
+            throw std::logic_error ("wrong number!");
+        }
+        result = r + result;
+        N = D;
+    }
+    return result;
+}
 
 // Calculator Calculator :: convert16to10(const std::string& string)
 // {
+//     size_t n = string.size();
+//     int b = 10 ;     //b is for base and it's 10 because we are cinverting to decimal 
+//     Node* bNode = new Node {1 , nullptr, nullptr};  
+//     Calculator B;
+//     B.setFirst(bNode);
+//     B.setLast(new Node {0, nullptr, bNode});
+//     bNode->next = B.getLastNode();
+//     Calculator result(new Node {0, nullptr, nullptr});
 
+//     for (size_t i = 0; i < string.size(); i++)
+//     {
+//         n--;            //formula is result = result + (b^n * d)
+//         Calculator calculatorD;
+//         char d = string.front();
+//         switch (d)
+//         {
+//         case 1 ... 9 :
+//             Node* nodeD = new Node {int(d),nullptr,nullptr};
+//             calculatorD.setFirst(nodeD);
+//             calculatorD.setLast(nodeD);
+//             break;
+//         case 'A': case 'a' :
+//             Node* nullNode = new  Node {0, nullptr, nullptr};
+//             Node* nodeA = new Node(1,nullNode,nullptr);
+//             nullNode->prev = nodeA;
+//             calculatorD.setFirst(nodeA);
+//             calculatorD.setLast(nullNode);
+//             break;
+//         case 'B': case 'b':
+//             Node* oneNode = new  Node {1, nullptr, nullptr};
+//             Node* nodeB = new Node(1,oneNode,nullptr);
+//             oneNode->prev = nodeB;
+//             calculatorD.setFirst(nodeB);
+//             calculatorD.setLast(oneNode);
+//             break;
+//         case 'C': case 'c':
+//             Node* nodeTwo = new  Node {2, nullptr, nullptr};
+//             Node* nodeC = new Node(1,nodeTwo,nullptr);
+//             nodeTwo->prev = nodeC;
+//             calculatorD.setFirst(nodeC);
+//             calculatorD.setLast(nodeTwo);
+//             break;
+//         case 'D': case 'd':
+//             Node* nodeTree = new  Node {3, nullptr, nullptr};
+//             Node* nodeD = new Node(1,nodeTree,nullptr);
+//             nodeTree->prev = nodeD;
+//             calculatorD.setFirst(nodeD);
+//             calculatorD.setLast(nodeTree);
+//             break;
+//         case 'E': case 'e':
+//             Node* nodeFour = new  Node {4, nullptr, nullptr};
+//             Node* nodeE = new Node(1,nodeFour,nullptr);
+//             nodeFour->prev = nodeE;
+//             calculatorD.setFirst(nodeE);
+//             calculatorD.setLast(nodeFour);
+//             break;
+//         case 'F': case 'f':
+//             Node* nodeFive = new  Node {5, nullptr, nullptr};
+//             Node* nodeF = new Node(1,nodeFive,nullptr);
+//             nodeFive->prev = nodeF;
+//             calculatorD.setFirst(nodeF);
+//             calculatorD.setLast(nodeFive);
+//             break;
+//         default: throw std::logic_error ("not a hex number!");
+//             break;
+//         }
+//         for (size_t i = 0; i < n; i++)
+//         {
+//             B = B * B;
+//         }
+//         result = result + (calculatorD * B );
+//     }
+//     return result;
 // }
 
 Calculator Calculator :: operator+(const Calculator& other)
@@ -447,14 +571,14 @@ Calculator Calculator :: operator/(const Calculator& other)
         return result;
     }
     Calculator result;
-    Calculator midResult1;
+    Calculator midResult;
     Node* current = this->first;
     int countSubtractions = 0;
     Node* nodeHelper = nullptr;
     Calculator multiplyDivisor(other.getFirstNode());
     
     Node* resultNode = new Node {current->data, nullptr, nullptr};
-    midResult1.setFirst(resultNode);
+    midResult.setFirst(resultNode);
     current = current->next;
     for (size_t i = 0; i < other.size() - 1; i++)
     {
@@ -463,28 +587,28 @@ Calculator Calculator :: operator/(const Calculator& other)
         resultNode = currentNode;
         current = current->next;
     }
-    midResult1.setLast(resultNode);
+    midResult.setLast(resultNode);
     while (current != nullptr)
     {
         if (nodeHelper != nullptr)
         {
-            Node* nextDigit = new Node {current->data, nullptr, midResult1.getLastNode()};
-            midResult1.getLastNode()->next = nextDigit;
-            midResult1.setLast(nextDigit);
+            Node* nextDigit = new Node {current->data, nullptr, midResult.getLastNode()};
+            midResult.getLastNode()->next = nextDigit;
+            midResult.setLast(nextDigit);
             current = current->next;
         }
-        if (midResult1 < multiplyDivisor)
+        if (midResult < multiplyDivisor)
         {
             Node* plusDigit = new Node {current->data, nullptr, resultNode};
             resultNode->next = plusDigit;
             resultNode = plusDigit;
             current = current->next;
-            midResult1.setLast(resultNode);
+            midResult.setLast(resultNode);
         }
         countSubtractions = 0;
-        while (midResult1 >= multiplyDivisor)
+        while (midResult >= multiplyDivisor)
         {
-            midResult1 = midResult1 - multiplyDivisor;
+            midResult = midResult - multiplyDivisor;
             countSubtractions++;
         }
         Node* setResult = new Node {countSubtractions, nullptr, nodeHelper};
@@ -499,6 +623,17 @@ Calculator Calculator :: operator/(const Calculator& other)
         nodeHelper = setResult;
         result.setLast(setResult);
     }
+    if (current == nullptr && midResult.size() == multiplyDivisor.size())
+    {
+        while (midResult >= multiplyDivisor)
+        {
+            midResult = midResult - multiplyDivisor;
+            countSubtractions++;
+        }
+        Node* setResult = new Node {countSubtractions, nullptr, nullptr};
+        result.setFirst(setResult);
+        result.setLast(setResult);
+    }
     return result;
 }
 
@@ -510,4 +645,36 @@ Calculator Calculator :: operator%(const Calculator& other)
     Calculator toSubtract = dividend*otherCoppy;
     result = (*this) - toSubtract;
     return result;
+}
+
+std::ostream& operator<<(std::ostream& out, Calculator& calc)
+{
+    Node* curr = calc.getFirstNode();
+    while(curr != nullptr)
+    {
+        out << curr->data;
+        curr = curr->next;
+    }
+    return out;
+}
+
+std::istream& operator>>(std::istream& in, Calculator& calc)
+{
+    std::string string;
+    in >> string;
+    Node* new_node = new Node(string[0]-'0');
+    calc.setFirst(new_node);
+    calc.setLast(calc.getFirstNode());
+    for (int i = 1; i < string.size(); i++)
+    {
+        Node* newLast = new Node(string[i]-'0', nullptr, calc.getLastNode());
+        calc.getLastNode()->next = newLast;
+        calc.setLast(newLast);
+    }
+    return in;
+}
+
+bool Calculator :: operator== (const Calculator& other)
+{
+    return (!((*this) > other) && !((*this) < other));
 }

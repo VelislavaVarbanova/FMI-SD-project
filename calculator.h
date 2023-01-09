@@ -1,5 +1,6 @@
 #include "Node.h"
 #include <string>
+#include <iostream>
 
 
 class Calculator
@@ -38,4 +39,8 @@ public:
     bool operator>(const Calculator&);
     bool operator>=(const Calculator&);
     bool operator<(const Calculator&);
+    bool operator==(const Calculator&);
+
+    friend std::ostream& operator<<(std::ostream&, Calculator&);
+    friend std::istream& operator>>(std::istream&, Calculator&);
 };
