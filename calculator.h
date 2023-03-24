@@ -27,7 +27,7 @@ public:
     void setLast(Node*);
 
     std::string convert10to16();
-    Calculator convert16to10(const std::string&);
+    //Calculator convert16to10(const std::string&);
 
     Calculator operator+(const Calculator&);
     Calculator operator-(const Calculator&);
